@@ -1,59 +1,52 @@
-import keyboardLayouts from "./resources/keyboardLayouts.js";
+import * as keyboardLayouts from "./resources/keyboardLayouts.js";
 import { wordExists } from "./services/wiktionaryParser.js";
 
 
 function getCurrentLanguage(word) {
 
-    const methods = {
-        "en": _en,
-        "ru": _ru,
+    const languageRegExes = {
+        "en": (s) => !!s.match(/[aA-zZ]/gm),
+        "ru": (s) => !!s.match(/[аА-яЯ]/gm),
     }
 
-    for (let [lang, m] of Object.entries(methods)) {
-        if (m(word)) {
-            return lang
+    for (let [language, regex] of Object.entries(languageRegExes)) {
+        if (regex(word)) {
+            return language
         }
     }
 
 }
 
 
-function _en(word) {
-    return !!word.match(/[aA-zZ]/gm)
-}
-
-
-function _ru(word) {
-    return !!word.match(/[аА-яЯ]/gm)
-}
-
-
-function en2ru(word) {
+function replaceChars(word, currentLanguage, languageToTranslate) {
     const chars = word.toLowerCase().split('');
-    return chars.map(char => keyboardLayouts.en_ru[char]).join('');
+    const keyboardLayout = keyboardLayouts.getFor(currentLanguage, languageToTranslate);
+    return chars.map(char => keyboardLayout.get(char)).join('');
 }
 
 
-function ru2en(word) {
-    const chars = word.toLowerCase().split('');
-    return chars.map(char => keyboardLayouts.ru_en[char]).join('');
-}
+/**
+ * Returns the "translation" of the word, if required.
+ *
+ * @param {string} word What needs to be "translated".
+ * @param {array} languages Allowed languages: current language and language for "translation". Should be two.
+ * @return {Promise.<string>} "translated" (if needed) word.
+ */
+async function translateWord(word, ...languages) {
 
-
-async function translateWord(word) {
-
-    let translation;
-
-    switch (getCurrentLanguage(word)) {
-        case 'en':
-            translation = en2ru(word);
-            break;
-        case 'ru':
-            translation = ru2en(word);
-            break;
-        default:
-            return word;
+    if (languages.length !== 2) {
+        throw new RangeError('The number of languages should be 2');
     }
+
+    const currentLanguage = getCurrentLanguage(word);
+
+    if (!languages.includes(currentLanguage)) {
+        throw new Error('Language not found');
+    }
+
+    const languageToTranslate = languages.filter(lang => lang !== currentLanguage)[0];
+
+    const translation = replaceChars(word, currentLanguage, languageToTranslate);
 
     const currentWordExists = await wordExists(word);
     const translationExists = await wordExists(translation);
@@ -70,10 +63,17 @@ async function translateWord(word) {
 }
 
 
-async function translateSentence(sentence) {
+/**
+ * Returns the "translation" of the sentence, if required.
+ *
+ * @param {string} sentence What needs to be "translated".
+ * @param {array} languages Allowed languages: current language and language for "translation". Should be two.
+ * @return {Promise.<string>} "translated" (if needed) sentence.
+ */
+async function translateSentence(sentence, ...languages) {
     const words = sentence.split(' ');
     const translatedWords = await Promise.all(words.map(async (word) => {
-        return await translateWord(word);
+        return await translateWord(word, ...languages);
     }));
 
     return translatedWords.join(' ');
