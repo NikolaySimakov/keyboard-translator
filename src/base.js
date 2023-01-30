@@ -80,7 +80,7 @@ async function translateSentence(sentence, ...languages) {
 }
 
 
-export {
+export default {
     translateWord, 
     translateSentence,
 }
