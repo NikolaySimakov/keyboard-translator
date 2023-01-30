@@ -19,7 +19,7 @@ function getCurrentLanguage(word) {
 
 
 function replaceChars(word, currentLanguage, languageToTranslate) {
-    const chars = word.toLowerCase().split('');
+    const chars = word.split('');
     const keyboardLayout = keyboardLayouts.getFor(currentLanguage, languageToTranslate);
     return chars.map(char => keyboardLayout.get(char)).join('');
 }
