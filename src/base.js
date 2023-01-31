@@ -18,10 +18,15 @@ function getCurrentLanguage(word) {
 }
 
 
-function replaceChars(word, currentLanguage, languageToTranslate) {
+function replaceChars(word, currentLanguage, languageToTranslate, ignoreIndexes=[]) {
     const chars = word.split('');
     const keyboardLayout = keyboardLayouts.getFor(currentLanguage, languageToTranslate);
-    return chars.map(char => keyboardLayout.get(char)).join('');
+    return chars
+        .map((char, index) => {
+            const charReplacement = keyboardLayout.get(char);
+            return !ignoreIndexes.includes(index) && !!charReplacement ? charReplacement : char;
+        })
+        .join('');
 }
 
 
@@ -81,6 +86,6 @@ async function translateSentence(sentence, ...languages) {
 
 
 export default {
-    translateWord, 
+    translateWord,
     translateSentence,
 }
