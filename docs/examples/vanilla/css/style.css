@@ -1,0 +1,38 @@
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+div.container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* display: block; */
+}
+
+textarea.area {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 20px;
+    padding: 1em;
+}
+
+button.btn {
+    display: block;
+    background-color: rgb(75, 75, 255);
+    color: white;
+    padding-inline: 4em;
+    padding-block: 1em;
+    border-radius: 1em;
+    border: none;
+    margin: 0 auto;
+}
+
+button.btn.text {
+    font-size: 16px;
+    /* font-weight: 600; */
+}
+
+button.btn:hover {
+    background-color: rgb(108, 108, 254);
+}
