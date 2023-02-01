@@ -1,6 +1,6 @@
 # Keyboard-translator
 
-Here will be a short description of my library.
+This library is for the segment of users with dual keyboard layouts who mistakenly write words without changing the keyboard layout. It automatically translates all the necessary text fragments, thus saving users a lot of time.
 
 ## Install
 
@@ -13,8 +13,7 @@ npm install keyboard-translator
 ```
 import keyboardTranslator from 'keyboard-translator';
 
-const query = 'some text yfgbcfyysq yf heccrjv zpsrt';
-const fixedSentence = keyboardTranslator.translateSentence(query);
-console.log(fixedSentence);
-// Right sentence: some text написанный на русском языке
+const text = 'Руддщ Цщкдв!'; // Incorrect sentence
+const fixedSentence = keyboardTranslator.translateSentence(text);
+console.log(fixedSentence); // Correct sentence: Hello World!
 ```
